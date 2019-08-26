@@ -18,9 +18,10 @@ export default new Router({
       component: () => import('./views/Games.vue')
     },
     {
-      path: '/game',
-      name: 'game',
+      path: "/game/:gamePlayerID",
+      props: true,
+      name: "game",
       component: () => import('./views/Game.vue')
-    }
+    },
   ]
 })

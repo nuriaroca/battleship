@@ -35,6 +35,9 @@ public class SalvoController{
         dto.put("date", game.getCreationDate());
         dto.put("gamePlayer", game.getGamePlayers()
         .stream()
+                        .sorted((a, b) -> {
+                            return (int)(a.getId() - b.getId());
+                        })
         .map(gamePlayer -> gamePlayerDTO(gamePlayer))
                 .collect(Collectors.toList())
         );
@@ -73,7 +76,7 @@ public class SalvoController{
                 .map(gp -> gamePlayerDTO(gp))
                 .collect(Collectors.toList())
         );
-        gddto.put("ship", gamePlayer.getShips()
+        gddto.put("ships", gamePlayer.getShips()
                 .stream()
                 .map(ship -> shipDTO(ship))
                 .collect(Collectors.toList())
