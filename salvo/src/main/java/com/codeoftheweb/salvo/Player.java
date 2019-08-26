@@ -20,7 +20,10 @@ public class Player {
     public Player() { }
 
     @OneToMany(mappedBy="player", fetch=FetchType.EAGER)
-    Set<GamePlayer> gamePlayers = new HashSet<>();
+    private Set<GamePlayer> gamePlayers = new HashSet<>();
+
+    @OneToMany(mappedBy="player", fetch=FetchType.EAGER)
+    private Set<Score> scores = new HashSet<>();
 
     public Player(String first, String last, String user) {
         this.firstName = first;
@@ -60,6 +63,23 @@ public class Player {
         return id;
     }
 
+    public void setId(long id) {
+        this.id = id;
+    }
 
+    public Set<GamePlayer> getGamePlayers() {
+        return gamePlayers;
+    }
 
+    public void setGamePlayers(Set<GamePlayer> gamePlayers) {
+        this.gamePlayers = gamePlayers;
+    }
+
+    public Set<Score> getScores() {
+        return scores;
+    }
+
+    public void setScores(Set<Score> scores) {
+        this.scores = scores;
+    }
 }
