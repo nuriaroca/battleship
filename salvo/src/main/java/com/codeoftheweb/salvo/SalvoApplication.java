@@ -197,8 +197,8 @@ public class SalvoApplication {
             Score sc2 = new Score (p2, g1, 0.0);
             Score sc3 = new Score (p1, g2, 0.5);
             Score sc4 = new Score (p2, g2, 0.5);
-            Score sc5 = new Score (p2, g3, 1.0);
-            Score sc6 = new Score (p4, g3, 0.0);
+            Score sc5 = new Score (p2, g3, 0.5);
+            Score sc6 = new Score (p4, g3, 0.5);
             Score sc7 = new Score (p2, g4, 0.5);
             Score sc8 = new Score (p1, g4, 0.5);
 

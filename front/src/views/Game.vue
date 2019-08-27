@@ -122,15 +122,23 @@ export default {
           document
             .getElementById(loc + "opp")
             .setAttribute("class", "mySalvoes");
+          document.getElementById(loc + "opp").innerHTML = sal.turn;
         });
       });
     },
     getOppSalvoes() {
       this.game.salvoEnemy.forEach(sal => {
         sal.salvoLocations.forEach(loc => {
-          document
-            .getElementById(loc + "mine")
-            .setAttribute("class", "oppSalvoes");
+          var element = document.getElementById(loc + "mine");
+          element.classList.add("oppSalvoes");
+          if (
+            element.classList.contains("Destroyer") ||
+            element.classList.contains("Submarine") ||
+            element.classList.contains("Patrol")
+          ) {
+            document.getElementById(loc + "mine").classList.add("ouch");
+          }
+          document.getElementById(loc + "mine").innerHTML = sal.turn;
         });
       });
     }
@@ -194,5 +202,13 @@ td:first-child {
 }
 .oppSalvoes {
   background-color: cadetblue;
+}
+.ouch {
+  background-image: linear-gradient(
+    to top right,
+    papayawhip calc(50% - 1px),
+    black,
+    papayawhip calc(50% + 1px)
+  );
 }
 </style>
