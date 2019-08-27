@@ -7,34 +7,64 @@
           <b
             v-if="gamePlayerID == game.gamePlayers[0].id"
           >{{game.gamePlayers[0].player.firstName}} {{game.gamePlayers[0].player.lastName}}</b>
-          <p v-else>{{game.gamePlayers[0].player.firstName}} {{game.gamePlayers[0].player.lastName}}</p>
-          <p>VS</p>
+          <span
+            v-else
+          >{{game.gamePlayers[0].player.firstName}} {{game.gamePlayers[0].player.lastName}}</span>
+          <span>{{" "}}VS{{" "}}</span>
           <b
             v-if="gamePlayerID == game.gamePlayers[1].id"
           >{{game.gamePlayers[1].player.firstName}} {{game.gamePlayers[1].player.lastName}}</b>
-          <p v-else>{{game.gamePlayers[1].player.firstName}} {{game.gamePlayers[1].player.lastName}}</p>
+          <span
+            v-else
+          >{{game.gamePlayers[1].player.firstName}} {{game.gamePlayers[1].player.lastName}}</span>
         </div>
       </div>
       <li v-for="(ship, s) in game.ships" :key="s">{{ship.type}}: {{ship.location}}</li>
     </div>
-    <table>
-      <thead>
-        <tr>
-          <th v-for="(number, n) in columns" :key="n">
-            <span v-if="n==0"></span>
-            <span v-else>{{columns[n]}}</span>
-          </th>
-        </tr>
-      </thead>
-      <tbody>
-        <tr v-for="(letter,l) in rows" :key="l">
-          <td v-for="(number, n) in columns" :key="n" :id="letter+number">
-            <span class="letter" v-if="n==0">{{letter}}</span>
-            <span v-else>{{letter + number}}</span>
-          </td>
-        </tr>
-      </tbody>
-    </table>
+    <div class="tables">
+      <div class="table">
+        <h4>Ship Gird</h4>
+        <table>
+          <thead>
+            <tr>
+              <th v-for="(number, n) in columns" :key="n">
+                <span v-if="n==0"></span>
+                <span v-else>{{columns[n]}}</span>
+              </th>
+            </tr>
+          </thead>
+          <tbody>
+            <tr v-for="(letter,l) in rows" :key="l">
+              <td v-for="(number, n) in columns" :key="n" :id="letter+number+'mine'">
+                <span class="letter" v-if="n==0">{{letter}}</span>
+                <span v-else></span>
+              </td>
+            </tr>
+          </tbody>
+        </table>
+      </div>
+      <div class="table">
+        <h4>Salvo Gird</h4>
+        <table>
+          <thead>
+            <tr>
+              <th v-for="(number, n) in columns" :key="n">
+                <span v-if="n==0"></span>
+                <span v-else>{{columns[n]}}</span>
+              </th>
+            </tr>
+          </thead>
+          <tbody>
+            <tr v-for="(letter,l) in rows" :key="l">
+              <td v-for="(number, n) in columns" :key="n" :id="letter+number+'opp'">
+                <span class="letter" v-if="n==0">{{letter}}</span>
+                <span v-else></span>
+              </td>
+            </tr>
+          </tbody>
+        </table>
+      </div>
+    </div>
   </v-container>
 </template>
 
@@ -55,6 +85,8 @@ export default {
   watch: {
     game: function() {
       this.paintShips();
+      this.getMySalvoes();
+      this.getOppSalvoes();
     }
   },
   methods: {
@@ -70,7 +102,6 @@ export default {
         .then(function(json) {
           that.game = json;
           console.log(json);
-          // that.paintShips();
         })
         .catch(function(error) {
           console.log("Request failed: " + error.message);
@@ -79,16 +110,30 @@ export default {
     paintShips() {
       this.game.ships.forEach(ship => {
         ship.location.forEach(loc => {
-          document.getElementById(loc).setAttribute("class", ship.type);
+          document
+            .getElementById(loc + "mine")
+            .setAttribute("class", ship.type);
+        });
+      });
+    },
+    getMySalvoes() {
+      this.game.salvo.forEach(sal => {
+        sal.salvoLocations.forEach(loc => {
+          document
+            .getElementById(loc + "opp")
+            .setAttribute("class", "mySalvoes");
+        });
+      });
+    },
+    getOppSalvoes() {
+      this.game.salvoEnemy.forEach(sal => {
+        sal.salvoLocations.forEach(loc => {
+          document
+            .getElementById(loc + "mine")
+            .setAttribute("class", "oppSalvoes");
         });
       });
     }
-    // playerID() {
-    //   this.game.gamePlayers.forEach(id => {
-    //     if (gamePlayerID == id) {
-    //     }
-    //   });
-    // }
   }
 };
 </script>
@@ -101,17 +146,29 @@ table {
   margin: auto;
   border-collapse: collapse;
 }
+.tables {
+  display: flex;
+  align-content: space-between;
+}
+.table {
+  display: flex;
+  flex-direction: column;
+}
 .letter {
   font-weight: bold;
 }
+h4 {
+  margin-top: 20px;
+  margin-bottom: 5px;
+}
 th {
-  width: 50px;
-  height: 50px;
+  width: 40px;
+  height: 40px;
 }
 td {
   text-align: center;
-  width: 50px;
-  height: 50px;
+  width: 40px;
+  height: 40px;
   border: solid 1px;
 }
 tr:first-child {
@@ -131,5 +188,11 @@ td:first-child {
 .Patrol {
   background-color: yellow;
   font-weight: bold;
+}
+.mySalvoes {
+  background-color: pink;
+}
+.oppSalvoes {
+  background-color: cadetblue;
 }
 </style>
