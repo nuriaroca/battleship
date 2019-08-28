@@ -31,6 +31,7 @@
         <v-simple-table>
           <thead>
             <tr>
+              <th class="text-left">Position</th>
               <th class="text-left">User</th>
               <th class="text-left">Wins</th>
               <th class="text-left">Loses</th>
@@ -39,12 +40,13 @@
             </tr>
           </thead>
           <tbody>
-            <tr v-for="(lead, l) in leader" :key="l">
-              <td>{{leader}}</td>
-              <td>{{leader.wins}}</td>
-              <td>{{leader.loses}}</td>
-              <td>{{leader.draws}}</td>
-              <td>{{leader.points}}</td>
+            <tr v-for="(key, k) in sorted" :key="k">
+              <td>{{k+1}}</td>
+              <td>{{key.name}}</td>
+              <td>{{key.wins}}</td>
+              <td>{{key.loses}}</td>
+              <td>{{key.draws}}</td>
+              <td>{{key.points}}</td>
             </tr>
           </tbody>
         </v-simple-table>
@@ -55,10 +57,11 @@
 
 <script>
 export default {
+ 
   data() {
     return {
       games: {},
-      leader: {}
+      sorted: []
     };
   },
   created() {
@@ -93,13 +96,22 @@ export default {
           throw new Error(response.statusText);
         })
         .then(function(json) {
-          console.log(json);
+          // console.log(json);
           let data = json;
 
-          that.leader = Object.values(data)
-            .sort((a, b) => b.points - a.points)
-            .forEach(key => {});
-          console.log(that.leader);
+          Object.keys(data)
+            .sort(function(a, b) {
+              return data[b].points > data[a].points
+                ? 1
+                : data[b].points < data[a].points
+                ? -1
+                : data[a].wins + data[a].loses + data[a].draws <
+                  data[b].wins + data[b].loses + data[b].draws;
+            })
+            .forEach(function(key) {
+              data[key]["name"] = key;
+              that.sorted.push(data[key]);
+            });
         })
         .catch(function(error) {
           console.log("Request failed: " + error.message);

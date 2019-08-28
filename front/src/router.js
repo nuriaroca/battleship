@@ -23,5 +23,6 @@ export default new Router({
       name: "game",
       component: () => import('./views/Game.vue')
     },
+
   ]
 })

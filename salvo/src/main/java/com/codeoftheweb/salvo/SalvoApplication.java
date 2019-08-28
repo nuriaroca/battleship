@@ -3,8 +3,18 @@ package com.codeoftheweb.salvo;
 import org.springframework.boot.CommandLineRunner;
 import org.springframework.boot.SpringApplication;
 import org.springframework.boot.autoconfigure.SpringBootApplication;
+import org.springframework.boot.autoconfigure.security.SecurityProperties;
 import org.springframework.context.annotation.Bean;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.context.annotation.Configuration;
+import org.springframework.security.config.annotation.authentication.builders.AuthenticationManagerBuilder;
+import org.springframework.security.config.annotation.authentication.configuration.GlobalAuthenticationConfigurerAdapter;
+import org.springframework.security.config.annotation.web.builders.HttpSecurity;
+import org.springframework.security.config.annotation.web.configuration.EnableWebSecurity;
+import org.springframework.security.config.annotation.web.configuration.WebSecurityConfigurerAdapter;
+import org.springframework.security.core.authority.AuthorityUtils;
+import org.springframework.security.core.userdetails.User;
+import org.springframework.security.core.userdetails.UsernameNotFoundException;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
 
@@ -13,6 +23,9 @@ import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.Date;
 import java.util.List;
+
+import org.springframework.security.crypto.password.PasswordEncoder;
+import org.springframework.security.crypto.factory.PasswordEncoderFactories;
 
 @SpringBootApplication
 public class SalvoApplication {
@@ -24,10 +37,10 @@ public class SalvoApplication {
     @Bean
     public CommandLineRunner initData(PlayerRepository playerRepo, GameRepository gameRepo, GamePlayerRepository gamePlayerRepo, ShipRepository shipRepo, SalvoRepository salvoRepo, ScoreRepository scoreRepo) {
         return (args) -> {
-            Player p1 = new Player("Jack", "Bauer", "j.bauer@ctu.gov");
-            Player p2  = new Player("Chloe", "O'Brian", "c.obrian@ctu.gov");
-            Player p3 = new Player("Kim", "Bauer", "kim_bauer@gmail.com");
-            Player p4 = new Player("Tony", "Almeida", "t.almeida@ctu.gov");
+            Player p1 = new Player("Jack", "Bauer", "j.bauer@ctu.gov", "24");
+            Player p2  = new Player("Chloe", "O'Brian", "c.obrian@ctu.gov", "42");
+            Player p3 = new Player("Kim", "Bauer", "kim_bauer@gmail.com", "kb");
+            Player p4 = new Player("Tony", "Almeida", "t.almeida@ctu.gov", "mole");
 
             playerRepo.save(p1);
             playerRepo.save(p2);
@@ -197,8 +210,8 @@ public class SalvoApplication {
             Score sc2 = new Score (p2, g1, 0.0);
             Score sc3 = new Score (p1, g2, 0.5);
             Score sc4 = new Score (p2, g2, 0.5);
-            Score sc5 = new Score (p2, g3, 0.5);
-            Score sc6 = new Score (p4, g3, 0.5);
+            Score sc5 = new Score (p2, g3, 1.0);
+            Score sc6 = new Score (p4, g3, 0.0);
             Score sc7 = new Score (p2, g4, 0.5);
             Score sc8 = new Score (p1, g4, 0.5);
 
@@ -212,5 +225,50 @@ public class SalvoApplication {
             scoreRepo.save(sc8);
         };
     }
+
 }
+@Configuration
+
+class WebSecurityConfiguration extends GlobalAuthenticationConfigurerAdapter {
+
+    @Autowired
+    PlayerRepository playerRepo;
+
+    @Override
+    public void init(AuthenticationManagerBuilder auth) throws Exception {
+        auth.userDetailsService(inputName -> {
+            Player player = playerRepo.findByUserName(inputName);
+            if (player != null) {
+                return new User(player.getUserName(), player.getPassword(),
+                        AuthorityUtils.createAuthorityList("USER"));
+            } else {
+                throw new UsernameNotFoundException("Unknown user: " + inputName);
+            }
+        });
+    }
+}
+
+@Configuration
+@EnableWebSecurity
+class WebSecurityConfig extends WebSecurityConfigurerAdapter {
+    @Override
+    protected void configure(HttpSecurity http) throws Exception {
+        http.authorizeRequests()
+
+                .antMatchers("/games").permitAll()
+                .antMatchers("/leader_ board").permitAll()
+                .antMatchers("/game/:gamePlayerID").permitAll()
+                /*.antMatchers("/**").hasAuthority("USER")*/
+                .and()
+                .formLogin();
+
+        http.formLogin()
+                .usernameParameter("name")
+                .passwordParameter("pwd")
+                .loginPage("/api/login");
+
+        http.logout().logoutUrl("/api/logout");
+    }
+}
+
 
