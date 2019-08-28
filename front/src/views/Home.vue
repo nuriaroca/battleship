@@ -1,24 +1,35 @@
 <template>
-  <v-container>
+  <v-container class="welcome container">
     <h1>Home</h1>
-    <v-btn @click="login">Login</v-btn>
+    <div class="card-content center-align"></div>
+    <input v-model="name">
+    <input v-model="pwd">
+
+    <v-btn @click="login">Log in</v-btn>
   </v-container>
 </template>
 
 <script>
 export default {
-  created() {
-    this.login();
+  data() {
+    return {
+      name: "",
+      pwd: ""
+    };
   },
-  method: {
+  methods: {
     login() {
+      var ourData = {
+        name: this.name,
+        pwd: this.pwd
+      };
       fetch("/api/login", {
         credentials: "include",
         headers: {
           "Content-Type": "application/x-www-form-urlencoded"
         },
         method: "POST",
-        body: getBody(ourData)
+        body: this.getBody(ourData)
       })
         .then(function(data) {
           console.log("Request success: ", data);
@@ -26,6 +37,15 @@ export default {
         .catch(function(error) {
           console.log("Request failure: ", error);
         });
+    },
+    getBody(json) {
+      var body = [];
+      for (var key in json) {
+        var encKey = encodeURIComponent(key);
+        var encVal = encodeURIComponent(json[key]);
+        body.push(encKey + "=" + encVal);
+      }
+      return body.join("&");
     }
   }
 };
