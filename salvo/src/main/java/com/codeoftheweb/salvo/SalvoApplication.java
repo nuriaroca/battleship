@@ -47,9 +47,9 @@ public class SalvoApplication {
     public CommandLineRunner initData(PlayerRepository playerRepo, GameRepository gameRepo, GamePlayerRepository gamePlayerRepo, ShipRepository shipRepo, SalvoRepository salvoRepo, ScoreRepository scoreRepo) {
         return (args) -> {
             Player p1 = new Player("Jack", "Bauer", "j.bauer@ctu.gov", passwordEncoder().encode("24"));
-            Player p2  = new Player("Chloe", "O'Brian", "c.obrian@ctu.gov", "42");
-            Player p3 = new Player("Kim", "Bauer", "kim_bauer@gmail.com", "kb");
-            Player p4 = new Player("Tony", "Almeida", "t.almeida@ctu.gov", "mole");
+            Player p2  = new Player("Chloe", "O'Brian", "c.obrian@ctu.gov",  passwordEncoder().encode("42"));
+            Player p3 = new Player("Kim", "Bauer", "kim_bauer@gmail.com",  passwordEncoder().encode("kb"));
+            Player p4 = new Player("Tony", "Almeida", "t.almeida@ctu.gov",  passwordEncoder().encode("mole"));
 
             playerRepo.save(p1);
             playerRepo.save(p2);

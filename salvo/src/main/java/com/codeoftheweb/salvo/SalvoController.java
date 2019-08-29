@@ -1,6 +1,7 @@
 package com.codeoftheweb.salvo;
 
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.security.core.Authentication;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
 import org.springframework.web.bind.annotation.PathVariable;
@@ -22,16 +23,18 @@ public class SalvoController{
     private List<String> salvoEnemy = new ArrayList<>();
 
     @RequestMapping("/games")
-    public List<Map<String, Object>> getAll() {
+    public List<Map<String, Object>> getAll(Authentication auth) {
+
         return gameRepo.findAll()
                 .stream()
-                .map(game -> gameDTO(game))
+                .map(game -> gameDTO(game, auth))
                 .collect(Collectors.toList());
     }
 
-    private Map<String, Object> gameDTO(Game game){
+    private Map<String, Object> gameDTO(Game game, Authentication authentication){
         Map<String, Object> dto = new HashMap<>();
         dto.put("id", game.getId());
+        dto.put("playerLogged", authentication.getName() );
         dto.put("date", game.getCreationDate());
         dto.put("gamePlayer", game.getGamePlayers()
         .stream()
@@ -156,4 +159,6 @@ public class SalvoController{
 
         return gsdto;
     }
+
+
 }
