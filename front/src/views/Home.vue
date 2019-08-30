@@ -62,7 +62,8 @@ export default {
         })
         .catch(function(error) {
           console.log("Request failure: ", error);
-        });
+        })
+        .then(() => window.location.reload());
     },
     getBody(json) {
       var body = [];

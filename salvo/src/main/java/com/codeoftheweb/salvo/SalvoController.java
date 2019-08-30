@@ -23,18 +23,24 @@ public class SalvoController{
     private List<String> salvoEnemy = new ArrayList<>();
 
     @RequestMapping("/games")
-    public List<Map<String, Object>> getAll(Authentication auth) {
-
-        return gameRepo.findAll()
+    public Map<String, Object> getAll(Authentication auth) {
+        Map<String, Object> padto = new HashMap<>();
+        if (auth != null){
+            padto.put("playerLogged", auth.getName() );
+        } else {
+            padto.put("playerLogged", "guest");
+        }
+        padto.put("games", gameRepo.findAll()
                 .stream()
-                .map(game -> gameDTO(game, auth))
-                .collect(Collectors.toList());
+                .map(game -> gameDTO(game))
+                .collect(Collectors.toList()));
+        return padto;
     }
 
-    private Map<String, Object> gameDTO(Game game, Authentication authentication){
+    private Map<String, Object> gameDTO(Game game){
         Map<String, Object> dto = new HashMap<>();
         dto.put("id", game.getId());
-        dto.put("playerLogged", authentication.getName() );
+
         dto.put("date", game.getCreationDate());
         dto.put("gamePlayer", game.getGamePlayers()
         .stream()

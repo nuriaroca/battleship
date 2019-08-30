@@ -56,8 +56,8 @@
 </template>
 
 <script>
+
 export default {
- 
   data() {
     return {
       games: {},
@@ -79,7 +79,7 @@ export default {
           throw new Error(response.statusText);
         })
         .then(function(json) {
-          that.games = json;
+          that.games = json.games;
           // console.log(json);
         })
         .catch(function(error) {
@@ -117,7 +117,8 @@ export default {
           console.log("Request failed: " + error.message);
         });
     }
-  }
+  },
+
 };
 </script>
 
